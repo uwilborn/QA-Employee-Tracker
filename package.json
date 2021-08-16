@@ -1,0 +1,25 @@
+{
+  "name": "qa-employee-tracker",
+  "version": "1.0.0",
+  "description": "view and interact with database",
+  "main": "qaemployeesDBconnections.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "inquirer": "^8.1.2",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uwilborn/QA-Employee-Tracker.git"
+  },
+  "author": "Ursula Wilborn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uwilborn/QA-Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/uwilborn/QA-Employee-Tracker#readme"
+}
