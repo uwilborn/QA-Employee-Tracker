@@ -161,15 +161,16 @@ const viewEmployee = () => {
       })
     .then((answer) => {
         // based on their answer, call the one of the functions
-        if (answer.viewChoice === 'ADD') {
+        if (answer.viewChoice === 'VIEW AN EMPLOYEE') {
+            console.log("Search employee by first and last name")
             idView();
-          } else if (answer.viewChoice === 'VIEW') {
+          } else if (answer.viewChoice === 'VIEW ALL EMPLOYEES') {
             allView();
-          } else if (answer.viewChoice === 'UPDATE') {
+          } else if (answer.viewChoice === 'VIEW EMPLOYEES BY DEPARTMENT') {
               departmentView();
-          } else if (answer.viewChoice === 'DELETE') {
+          } else if (answer.viewChoice === 'VIEW EMPLOYEES BY MANAGER') {
               managerView();
-            } else if (answer.viewChoice === 'DELETE') {
+            } else if (answer.viewChoice === 'VIEW EMPLOYEES BY ROLE') {
                 roleView();
           } else {
             connection.end();
@@ -179,39 +180,37 @@ const viewEmployee = () => {
 
 
 
-// const idView = () => {
-//         // prompt for info about the employee being viewed
-//         inquirer
-//           .prompt([
-//      {
-//             name: "firstname",
-//             message: "Employee's First Name?",
-//             type: "input"
-//         },
-//         {
-//             name: "lastname",
-//             message: "Employee's Last Name?",
-//             type: "input"
-//         },
-//         ])
-//         .then((answer) => {
-//             // when finished prompting, filter db with that info
-//             connection.query(
-//               ['SELECT * FROM employees
-//               FROM employee' ,
-                
-//               }],
+const idView = () => {
+        // prompt for info about the employee being viewed
+        inquirer
+          .prompt([
+     {
+            name: "firstname",
+            message: "Employee's First Name?",
+            type: "input"
+        },
+        {
+            name: "lastname",
+            message: "Employee's Last Name?",
+            type: "input"
+        },
+        ])
+        .then((answer) => {
+            // when finished prompting, filter db with that info
+            connection.query("select * from employee where first_name= ? and last_name = ?;",
+            [answer.firstname, answer.lastname],
            
-//               ,
-//               (err) => {
-//                 if (err) throw err;
-//                 console.log('Your employee item was created successfully!');
-//                 // re-prompt the user for if they want to continue
-//                 start();
-//               }
-//             );
-//           });
-//       };
+            
+              (err,data) => {
+                if (err) throw err;
+                console.log('Your employee item was created successfully!');
+                console.table(data)
+                // re-prompt the user for if they want to continue
+                start();
+              }
+            );
+          });
+      };
     
 
 // Create a function to initialize app

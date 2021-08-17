@@ -24,27 +24,3 @@ create table employee (
     role_id integer,
     manager_id integer null
     );
-
--- Creates new rows containing data in all named columns--
-INSERT INTO department (id, name)
-VALUES (76, "Quality");
-
-INSERT INTO role (id, title, salary)
-VALUES (76, "QA Engineer", 87000.34);
-
-INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
-VALUES (76, "Jessica", "Stallworth", 4, 5);
-
-
--- Command-line application that allows the user to add departments, roles, employees;
-
--- Command-line application that allows the user to view departments, roles, employees
-
--- Command-line application that allows the user to update roles;
-
--- Command-line application that allows the user to update manager_id;
--- Command-line application that allows the user to view manager_id;
--- Command-line application that allows the user to delete departments, roles, employees;
- 
-
- -- Command-line application that allows the user to view the total utilized budget of a department (ie the combined salaries of all employees in that department);
