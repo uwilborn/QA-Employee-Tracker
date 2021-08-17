@@ -27,10 +27,10 @@ create table employee (
 
 -- Creates new rows containing data in all named columns--
 INSERT INTO department (id, name)
-VALUES (010203, "Quality");
+VALUES (76, "Quality");
 
 INSERT INTO role (id, title, salary)
-VALUES (476, "QA Engineer", 87000.34);
+VALUES (76, "QA Engineer", 87000.34);
 
 INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
 VALUES (76, "Jessica", "Stallworth", 4, 5);
