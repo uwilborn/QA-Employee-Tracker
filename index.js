@@ -199,11 +199,9 @@ const idView = () => {
             // when finished prompting, filter db with that info
             connection.query("select * from employee where first_name= ? and last_name = ?;",
                 [answer.firstname, answer.lastname],
-
-
                 (err, data) => {
                     if (err) throw err;
-                    console.log('Your employee item was created successfully!');
+                    console.log('Here is the employee!');
                     console.table(data)
                     // re-prompt the user for if they want to continue
                     start();
@@ -217,31 +215,99 @@ const allView = () => {
 
         (err, data) => {
             if (err) throw err;
-            console.log('Your employee item was created successfully!');
+            console.log('Here are all the employees!');
             console.table(data)
             // re-prompt the user for if they want to continue
             start();
         }
     );
-    }
-
-// Create a function to initialize app
-function init() {
-    inquirer.prompt(questions)
-        .then(function (response) {
-            console.log(response)
-
-            console.log(READMEContent);
-
-            fs.writeFile('README.md', READMEContent, function (err, message) {
-                console.log('file generated');
-                console.table(res);
-                connection.end();
-            })
-        })
 }
+const departmentView = () => {
+    // prompt for info about the employee being viewed
+    inquirer
+        .prompt([
+            {
+                name: "dname",
+                message: "Name of department you wish to view?",
+                type: "input"
+            },
+        ])
+        .then((answer) => {
+            // when finished prompting, filter db with that info
+            connection.query("select * from department where name= ?",
+                [answer.dname],
+                (err, data) => {
+                    if (err) throw err;
+                    console.log('Here are the employees in this department!');
+                    console.table(data)
+                    // re-prompt the user for if they want to continue
+                    start();
+                }
+            );
+        });
+};
+
+const managerView = () => {
+    inquirer
+        .prompt([
+            {
+                name: "mname",
+                message: "ID of manager's employees you wish to view?",
+                type: "input"
+            },
+        ])
+        .then((answer) => {
+            connection.query("select * from employee where manager_id= ?",
+                [answer.dname],
+                (err, data) => {
+                    if (err) throw err;
+                    console.log('Here are the employees who report to this manager!');
+                    console.table(data)
+                    // re-prompt the user for if they want to continue
+                    start();
+                }
+            );
+        });
+    };
+
+const roleView = () => {
+        inquirer
+            .prompt([
+                {
+                    name: "rname",
+                    message: "Employee's role you wish to view?",
+                    type: "input"
+                },
+            ])
+            .then((answer) => {
+                connection.query("select * from employee where role_id",
+                    [answer.rname],
+                    (err, data) => {
+                        if (err) throw err;
+                        console.log('Your employee item was created successfully!');
+                        console.table(data)
+                        // re-prompt the user for if they want to continue
+                        start();
+                    }
+                );
+            });
+        };
+
+    // Create a function to initialize app
+    function init() {
+                    inquirer.prompt(questions)
+                        .then(function (response) {
+                            console.log(response)
+
+                            console.log(READMEContent);
+
+                            fs.writeFile('README.md', READMEContent, function (err, message) {
+                                console.log('file generated');
+                                console.table(res);
+                                connection.end();
+                            })
+                        })
+                }
 
 // Function call to initialize app
 // init();
-
-
