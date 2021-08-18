@@ -1,33 +1,34 @@
-const mysql = require('mysql');
+// const mysql = require('mysql');
 
-const connection = mysql.createConnection({
-  host: 'localhost',
+// const connection = mysql.createConnection({
+//   host: 'localhost',
 
-  // Your port, if not 3306
-  port: 3306,
+//   // Your port, if not 3306
+//   port: 3306,
 
-  // Your username
-  user: 'root',
+//   // Your username
+//   user: 'root',
 
-  // Be sure to update with your own MySQL password!
-  password: '',
-  database: 'qaemployees_db',
-});
+//   // Be sure to update with your own MySQL password!
+//   password: '',
+//   database: 'qaemployees_db',
+// });
 
-const afterConnection = () => {
-  connection.query('SELECT * FROM employee', (err, res) => {
-    if (err) throw err;
-    console.table(res);
-    connection.end();
-  });
-};
+// const afterConnection = () => {
+//   connection.query('SELECT * FROM employee', (err, res) => {
+//     if (err) throw err;
+//     console.table(res);
+//     connection.end();
+//   });
+// };
 
-
-connection.connect((err) => {
-  if (err) throw err;
-  console.log(`connected as id ${connection.threadId}`);
-  afterConnection();
-});
+// // connect to the mysql server and sql database
+// connection.connect((err) => {
+//   if (err) throw err;
+//   console.log(`connected as id ${connection.threadId}`);
+//   // run the start function after the connection is made to prompt the user
+//   afterConnection();
+// });
 
 
 

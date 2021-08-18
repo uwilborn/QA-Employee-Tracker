@@ -142,12 +142,14 @@ const addEmployee = () => {
                 (err) => {
                     if (err) throw err;
                     console.log('Your employee item was created successfully!');
-                    // re-prompt the user for if they want to continue
+                   // re-prompt the user for if they want to continue
                     start();
                 }
             );
         });
 };
+
+
 
 
 // function to handle VIEWING employees in the database
@@ -174,6 +176,7 @@ const viewEmployee = () => {
                 roleView();
             } else {
                 connection.end();
+                
             }
         });
 };
@@ -234,7 +237,7 @@ const departmentView = () => {
         ])
         .then((answer) => {
             // when finished prompting, filter db with that info
-            connection.query("select * from department where name= ?",
+            connection.query("SELECT * FROM ((department INNER JOIN employee ON department.id = employee.id) INNER JOIN role ON department.id = role.id) where name = ?",
                 [answer.dname],
                 (err, data) => {
                     if (err) throw err;
@@ -257,8 +260,8 @@ const managerView = () => {
             },
         ])
         .then((answer) => {
-            connection.query("select * from employee where manager_id= ?",
-                [answer.dname],
+            connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id) where manager_id = ?",
+                [answer.mname],
                 (err, data) => {
                     if (err) throw err;
                     console.log('Here are the employees who report to this manager!');
@@ -280,7 +283,7 @@ const roleView = () => {
                 },
             ])
             .then((answer) => {
-                connection.query("select * from employee where role_id",
+                connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id) where role_id = ?",
                     [answer.rname],
                     (err, data) => {
                         if (err) throw err;
