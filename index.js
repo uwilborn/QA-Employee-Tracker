@@ -79,6 +79,83 @@ const addEmployee = () => {
                 message: "Department Name?",
                 type: "input"
             },
+            // {
+            //     name: "title",
+            //     message: "Employee's Title?",
+            //     type: "list",
+            //     choices: ["QA Tech", "QA Analyst", "QA Engineer", "QA Manager", "QA Director"]
+            // },
+            // {
+            //     name: "annualSalary",
+            //     message: "Employee's Salary?",
+            //     type: "input"
+            // },
+            // {
+            //     name: "firstname",
+            //     message: "Employee's First Name?",
+            //     type: "input"
+            // },
+            // {
+            //     name: "lastname",
+            //     message: "Employee's Last Name?",
+            //     type: "input"
+            // },
+            // {
+            //     name: "erole",
+            //     message: "Employee's Role ID?",
+            //     type: "list",
+            //     choices: ["1", "2", "3", "4", "5"]
+            // },
+            // {
+            //     name: "manager",
+            //     message: "Employee's Manager?",
+            //     type: "list",
+            //     choices: ["4", "5", ""]
+            // },
+        ])
+        .then((answer) => {
+            // when finished prompting, insert a new item into the db with that info
+            connection.query("INSERT INTO department set ?",
+                    {
+                        id: answer.identification,
+                        name: answer.departmentName,
+                    },
+                // ['INSERT INTO role VALUES ?',
+                //     {
+                //         id: answer.identification,
+                //         title: answer.title,
+                //         salary: answer.annualSalary,
+
+                //     }],
+                // ['INSERT INTO employee VALUES ?',
+                //     {
+                //         id: answer.identification,
+                //         first_name: answer.firstname,
+                //         last_name: answer.lastname,
+                //         role_id: answer.erole,
+                //         manager_id: answer.manager,
+
+                //     }],
+                
+                (err) => {
+                    if (err) throw err;
+                    console.log('Your employee item was created successfully!');
+                   // re-prompt the user for if they want to continue
+                    rolesetup();
+                }
+            );
+        });
+};
+
+const rolesetup = () => {
+    // prompt for info about the employee being added
+    inquirer
+        .prompt([
+            {
+                name: "identification",
+                message: "Employees ID?",
+                type: "input"
+            },
             {
                 name: "title",
                 message: "Employee's Title?",
@@ -88,6 +165,37 @@ const addEmployee = () => {
             {
                 name: "annualSalary",
                 message: "Employee's Salary?",
+                type: "input"
+            },
+            
+        ])
+        .then((answer) => {
+            // when finished prompting, insert a new item into the db with that info
+            connection.query("INSERT INTO role set ?",
+           {
+                id: answer.identification,
+                title: answer.title,
+                salary: answer.annualSalary,
+
+            },           
+                (err) => {
+                    if (err) throw err;
+                    console.log('Your employee item was created successfully!');
+                   // re-prompt the user for if they want to continue
+                    employeesetup();
+                }
+            );
+        });
+};
+
+
+const employeesetup = () => {
+    // prompt for info about the employee being added
+    inquirer
+        .prompt([
+            {
+                name: "identification",
+                message: "Employees ID?",
                 type: "input"
             },
             {
@@ -101,7 +209,7 @@ const addEmployee = () => {
                 type: "input"
             },
             {
-                name: "role",
+                name: "erole",
                 message: "Employee's Role ID?",
                 type: "list",
                 choices: ["1", "2", "3", "4", "5"]
@@ -115,30 +223,16 @@ const addEmployee = () => {
         ])
         .then((answer) => {
             // when finished prompting, insert a new item into the db with that info
-            connection.query(
-                ['INSERT INTO department SET ?',
-                    {
-                        id: answer.identification,
-                        name: answer.departmentName,
-
-                    }],
-                ['INSERT INTO role SET ?',
-                    {
-                        id: answer.identification,
-                        title: answer.title,
-                        salary: answer.annualSalary,
-
-                    }],
-                ['INSERT INTO employee SET ?',
-                    {
+            connection.query("INSERT INTO employee set ?",
+                {
                         id: answer.identification,
                         first_name: answer.firstname,
                         last_name: answer.lastname,
-                        role_id: answer.role,
+                        role_id: answer.erole,
                         manager_id: answer.manager,
 
-                    }]
-                ,
+                    },
+                
                 (err) => {
                     if (err) throw err;
                     console.log('Your employee item was created successfully!');
@@ -148,7 +242,6 @@ const addEmployee = () => {
             );
         });
 };
-
 
 
 
@@ -200,7 +293,7 @@ const idView = () => {
         ])
         .then((answer) => {
             // when finished prompting, filter db with that info
-            connection.query("select * from employee where first_name= ? and last_name = ?;",
+            connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id)  where first_name= ? and last_name = ?",
                 [answer.firstname, answer.lastname],
                 (err, data) => {
                     if (err) throw err;
@@ -214,7 +307,7 @@ const idView = () => {
 };
 
 const allView = () => {
-    connection.query("select * from employee;",
+    connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id)",
 
         (err, data) => {
             if (err) throw err;
@@ -295,6 +388,104 @@ const roleView = () => {
                 );
             });
         };
+
+
+// function to Update employees roles in the database
+const updateEmployee = () => {
+    inquirer
+        .prompt({
+            name: 'updateChoice',
+            type: 'list',
+            message: 'What do you want to update?',
+            choices: ['UPDATE EMPLOYEE ROLE', 'UPDATE EMPLOYEE MANAGER'],
+        })
+        .then((answer) => {
+            // based on their answer, call the one of the functions
+            if (answer.updateChoice === 'UPDATE EMPLOYEE ROLE') {
+                console.log("Search employee by first and last name")
+                roleUpdate();
+            } else if (answer.updateChoice === 'UPDATE EMPLOYEE MANAGER') {
+                managerUpdate();
+            } else {
+                connection.end();
+                
+            }
+        });
+};
+
+
+
+const roleUpdate = () => {
+    inquirer
+    .prompt([
+        {
+            name: "fupdate",
+            message: "Employee's First Name?",
+            type: "input"
+        },
+        {
+            name: "lupdate",
+            message: "Employee's Last Name?",
+            type: "input"
+        },
+        {
+            name: "rupdate",
+            message: "Employee's new role?",
+            type: "list",
+            choices: ["1", "2", "3", "4", "5"]
+        },
+    ])
+        .then((answer) => {
+            connection.query("UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?",
+                [answer.rupdate,answer.fupdate,answer.lupdate],
+                
+                (err, data) => {
+                    if (err) throw err;
+                    console.log('Your employee item was created successfully!');
+                    console.table(data)
+                    // re-prompt the user for if they want to continue
+                    start();
+                }
+            );
+        });
+    };
+
+    const managerUpdate = () => {
+        inquirer
+        .prompt([
+            {
+                name: "fupdate",
+                message: "Employee's First Name?",
+                type: "input"
+            },
+            {
+                name: "lupdate",
+                message: "Employee's Last Name?",
+                type: "input"
+            },
+            {
+                name: "mupdate",
+                message: "Employee's new role?",
+                type: "list",
+                choices: ["4", "5",""]
+            },
+        ])
+            .then((answer) => {
+                connection.query("UPDATE employee SET manager_id = ? WHERE first_name = ? AND last_name = ?",
+                    [answer.mupdate,answer.fupdate,answer.lupdate],
+                    
+                    (err, data) => {
+                        if (err) throw err;
+                        console.log('Your employee has a new manager!');
+                        console.table(data)
+                        // re-prompt the user for if they want to continue
+                        start();
+                    }
+                );
+            });
+        };
+    
+    
 
     // Create a function to initialize app
     function init() {
