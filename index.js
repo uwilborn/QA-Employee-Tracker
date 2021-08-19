@@ -18,13 +18,13 @@ const connection = mysql.createConnection({
     database: 'qaemployees_db',
 });
 
-const afterConnection = () => {
-    connection.query('SELECT * FROM employee', (err, res) => {
-        if (err) throw err;
-        console.table(res);
-        connection.end();
-    });
-};
+// const afterConnection = () => {
+//     connection.query('SELECT * FROM employee', (err, res) => {
+//         if (err) throw err;
+//         console.table(res);
+//         connection.end();
+//     });
+// };
 
 // connect to the mysql server and sql database
 connection.connect((err) => {
@@ -36,7 +36,7 @@ connection.connect((err) => {
 });
 
 
-// function which prompts the user for what action they should take (i.e. add, view, update, delete)
+// function which prompts the user for add, view, update, and delete employees
 const start = () => {
     inquirer
         .prompt({
@@ -65,6 +65,7 @@ const start = () => {
 
 
 // function to handle ADDING new employees to the database
+//function to add employee to the DEPARTMENT table
 const addEmployee = () => {
     // prompt for info about the employee being added
     inquirer
@@ -79,73 +80,28 @@ const addEmployee = () => {
                 message: "Department Name?",
                 type: "input"
             },
-            // {
-            //     name: "title",
-            //     message: "Employee's Title?",
-            //     type: "list",
-            //     choices: ["QA Tech", "QA Analyst", "QA Engineer", "QA Manager", "QA Director"]
-            // },
-            // {
-            //     name: "annualSalary",
-            //     message: "Employee's Salary?",
-            //     type: "input"
-            // },
-            // {
-            //     name: "firstname",
-            //     message: "Employee's First Name?",
-            //     type: "input"
-            // },
-            // {
-            //     name: "lastname",
-            //     message: "Employee's Last Name?",
-            //     type: "input"
-            // },
-            // {
-            //     name: "erole",
-            //     message: "Employee's Role ID?",
-            //     type: "list",
-            //     choices: ["1", "2", "3", "4", "5"]
-            // },
-            // {
-            //     name: "manager",
-            //     message: "Employee's Manager?",
-            //     type: "list",
-            //     choices: ["4", "5", ""]
-            // },
+
         ])
         .then((answer) => {
             // when finished prompting, insert a new item into the db with that info
             connection.query("INSERT INTO department set ?",
-                    {
-                        id: answer.identification,
-                        name: answer.departmentName,
-                    },
-                // ['INSERT INTO role VALUES ?',
-                //     {
-                //         id: answer.identification,
-                //         title: answer.title,
-                //         salary: answer.annualSalary,
+                {
+                    id: answer.identification,
+                    name: answer.departmentName,
+                },
 
-                //     }],
-                // ['INSERT INTO employee VALUES ?',
-                //     {
-                //         id: answer.identification,
-                //         first_name: answer.firstname,
-                //         last_name: answer.lastname,
-                //         role_id: answer.erole,
-                //         manager_id: answer.manager,
 
-                //     }],
-                
                 (err) => {
                     if (err) throw err;
                     console.log('Your employee item was created successfully!');
-                   // re-prompt the user for if they want to continue
+                    // re-prompt the user for if they want to continue
                     rolesetup();
                 }
             );
         });
 };
+
+//function to add employee to the ROLE table
 
 const rolesetup = () => {
     // prompt for info about the employee being added
@@ -167,27 +123,28 @@ const rolesetup = () => {
                 message: "Employee's Salary?",
                 type: "input"
             },
-            
+
         ])
         .then((answer) => {
             // when finished prompting, insert a new item into the db with that info
             connection.query("INSERT INTO role set ?",
-           {
-                id: answer.identification,
-                title: answer.title,
-                salary: answer.annualSalary,
+                {
+                    id: answer.identification,
+                    title: answer.title,
+                    salary: answer.annualSalary,
 
-            },           
+                },
                 (err) => {
                     if (err) throw err;
                     console.log('Your employee item was created successfully!');
-                   // re-prompt the user for if they want to continue
+                    // re-prompt the user for if they want to continue
                     employeesetup();
                 }
             );
         });
 };
 
+//function to add employee to the EMPLOYEE table
 
 const employeesetup = () => {
     // prompt for info about the employee being added
@@ -225,18 +182,18 @@ const employeesetup = () => {
             // when finished prompting, insert a new item into the db with that info
             connection.query("INSERT INTO employee set ?",
                 {
-                        id: answer.identification,
-                        first_name: answer.firstname,
-                        last_name: answer.lastname,
-                        role_id: answer.erole,
-                        manager_id: answer.manager,
+                    id: answer.identification,
+                    first_name: answer.firstname,
+                    last_name: answer.lastname,
+                    role_id: answer.erole,
+                    manager_id: answer.manager,
 
-                    },
-                
+                },
+
                 (err) => {
                     if (err) throw err;
                     console.log('Your employee item was created successfully!');
-                   // re-prompt the user for if they want to continue
+                    // re-prompt the user for if they want to continue
                     start();
                 }
             );
@@ -255,7 +212,7 @@ const viewEmployee = () => {
             choices: ['VIEW AN EMPLOYEE', 'VIEW ALL EMPLOYEES', 'VIEW EMPLOYEES BY DEPARTMENT', 'VIEW EMPLOYEES BY MANAGER', 'VIEW EMPLOYEES BY ROLE'],
         })
         .then((answer) => {
-            // based on their answer, call the one of the functions
+            // based on their answer, call one of the functions
             if (answer.viewChoice === 'VIEW AN EMPLOYEE') {
                 console.log("Search employee by first and last name")
                 idView();
@@ -269,13 +226,13 @@ const viewEmployee = () => {
                 roleView();
             } else {
                 connection.end();
-                
+
             }
         });
 };
 
 
-
+//View an individual employee record
 const idView = () => {
     // prompt for info about the employee being viewed
     inquirer
@@ -305,6 +262,8 @@ const idView = () => {
             );
         });
 };
+
+//View all the employees records
 
 const allView = () => {
     connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id)",
@@ -337,12 +296,46 @@ const departmentView = () => {
                     console.log('Here are the employees in this department!');
                     console.table(data)
                     // re-prompt the user for if they want to continue
-                    start();
+                    departmentSum();
                 }
             );
         });
 };
 
+//Sum the total salaries for a department
+const departmentSum = () => {
+    // prompt for info about the employee being viewed
+    inquirer
+        .prompt([
+            {
+                name: "dsum",
+                message: "Would you like the total salaries for this department? (Y or N)",
+                type: "input"
+            }
+        ])
+        .then((answer) => {
+            // when finished prompting, filter db with that info
+
+            if (answer.dsum === 'Y') {
+                connection.query("SELECT SUM(salary) FROM role",
+                    
+                    (err, data) => {
+                        if (err) throw err;
+                        console.log(data);
+
+                        // re-prompt the user for if they want to continue
+                        start();
+                    }
+                );
+            } else {
+                connection.end();
+                start();
+            }
+        });
+};
+
+
+//View the records of employees with the same manager 
 const managerView = () => {
     inquirer
         .prompt([
@@ -364,30 +357,32 @@ const managerView = () => {
                 }
             );
         });
-    };
+};
 
+
+//View the records of employees with the same role
 const roleView = () => {
-        inquirer
-            .prompt([
-                {
-                    name: "rname",
-                    message: "Employee's role you wish to view?",
-                    type: "input"
-                },
-            ])
-            .then((answer) => {
-                connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id) where role_id = ?",
-                    [answer.rname],
-                    (err, data) => {
-                        if (err) throw err;
-                        console.log('Your employee item was created successfully!');
-                        console.table(data)
-                        // re-prompt the user for if they want to continue
-                        start();
-                    }
-                );
-            });
-        };
+    inquirer
+        .prompt([
+            {
+                name: "rname",
+                message: "Employee's role you wish to view?",
+                type: "input"
+            },
+        ])
+        .then((answer) => {
+            connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id) where role_id = ?",
+                [answer.rname],
+                (err, data) => {
+                    if (err) throw err;
+                    console.log('Your employee item was created successfully!');
+                    console.table(data)
+                    // re-prompt the user for if they want to continue
+                    start();
+                }
+            );
+        });
+};
 
 
 // function to Update employees roles in the database
@@ -408,7 +403,7 @@ const updateEmployee = () => {
                 managerUpdate();
             } else {
                 connection.end();
-                
+
             }
         });
 };
@@ -417,28 +412,28 @@ const updateEmployee = () => {
 
 const roleUpdate = () => {
     inquirer
-    .prompt([
-        {
-            name: "fupdate",
-            message: "Employee's First Name?",
-            type: "input"
-        },
-        {
-            name: "lupdate",
-            message: "Employee's Last Name?",
-            type: "input"
-        },
-        {
-            name: "rupdate",
-            message: "Employee's new role?",
-            type: "list",
-            choices: ["1", "2", "3", "4", "5"]
-        },
-    ])
+        .prompt([
+            {
+                name: "fupdate",
+                message: "Employee's First Name?",
+                type: "input"
+            },
+            {
+                name: "lupdate",
+                message: "Employee's Last Name?",
+                type: "input"
+            },
+            {
+                name: "rupdate",
+                message: "Employee's new role?",
+                type: "list",
+                choices: ["1", "2", "3", "4", "5"]
+            },
+        ])
         .then((answer) => {
             connection.query("UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?",
-                [answer.rupdate,answer.fupdate,answer.lupdate],
-                
+                [answer.rupdate, answer.fupdate, answer.lupdate],
+
                 (err, data) => {
                     if (err) throw err;
                     console.log('Your employee item was created successfully!');
@@ -448,10 +443,10 @@ const roleUpdate = () => {
                 }
             );
         });
-    };
+};
 
-    const managerUpdate = () => {
-        inquirer
+const managerUpdate = () => {
+    inquirer
         .prompt([
             {
                 name: "fupdate",
@@ -467,41 +462,70 @@ const roleUpdate = () => {
                 name: "mupdate",
                 message: "Employee's new role?",
                 type: "list",
-                choices: ["4", "5",""]
+                choices: ["4", "5", ""]
             },
         ])
-            .then((answer) => {
-                connection.query("UPDATE employee SET manager_id = ? WHERE first_name = ? AND last_name = ?",
-                    [answer.mupdate,answer.fupdate,answer.lupdate],
-                    
-                    (err, data) => {
-                        if (err) throw err;
-                        console.log('Your employee has a new manager!');
-                        console.table(data)
-                        // re-prompt the user for if they want to continue
-                        start();
-                    }
-                );
-            });
-        };
-    
-    
+        .then((answer) => {
+            connection.query("UPDATE employee SET manager_id = ? WHERE first_name = ? AND last_name = ?",
+                [answer.mupdate, answer.fupdate, answer.lupdate],
 
-    // Create a function to initialize app
-    function init() {
-                    inquirer.prompt(questions)
-                        .then(function (response) {
-                            console.log(response)
-
-                            console.log(READMEContent);
-
-                            fs.writeFile('README.md', READMEContent, function (err, message) {
-                                console.log('file generated');
-                                console.table(res);
-                                connection.end();
-                            })
-                        })
+                (err, data) => {
+                    if (err) throw err;
+                    console.log('Your employee has a new manager!');
+                    console.table(data)
+                    // re-prompt the user for if they want to continue
+                    start();
                 }
+            );
+        });
+};
+
+const deleteEmployee = () => {
+    inquirer
+        .prompt([
+            {
+                name: "fdelete",
+                message: "Employee's First Name?",
+                type: "input"
+            },
+            {
+                name: "ldelete",
+                message: "Employee's Last Name?",
+                type: "input"
+            },
+        ])
+        .then((answer) => {
+            connection.query("DELETE FROM employee WHERE first_name = ? AND last_name = ?",
+                [answer.fdelete, answer.lupdate],
+
+                (err, data) => {
+                    if (err) throw err;
+                    console.log('Your employee item was deleted successfully!');
+                    console.table(data)
+                    // re-prompt the user for if they want to continue
+                    start();
+                }
+            );
+        });
+};
+
+
+
+// Create a function to initialize app
+function init() {
+    inquirer.prompt(questions)
+        .then(function (response) {
+            console.log(response)
+
+            console.log(READMEContent);
+
+            fs.writeFile('README.md', READMEContent, function (err, message) {
+                console.log('file generated');
+                console.table(res);
+                connection.end();
+            })
+        })
+}
 
 // Function call to initialize app
 // init();
