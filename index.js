@@ -209,7 +209,7 @@ const viewEmployee = () => {
             name: 'viewChoice',
             type: 'list',
             message: 'How would you like to view an employee(s)?',
-            choices: ['VIEW AN EMPLOYEE', 'VIEW ALL EMPLOYEES', 'VIEW EMPLOYEES BY DEPARTMENT', 'VIEW EMPLOYEES BY MANAGER', 'VIEW EMPLOYEES BY ROLE'],
+            choices: ['VIEW AN EMPLOYEE', 'VIEW ALL EMPLOYEES', 'VIEW EMPLOYEES BY DEPARTMENT', 'VIEW EMPLOYEES BY ROLE'],
         })
         .then((answer) => {
             // based on their answer, call one of the functions
@@ -220,8 +220,8 @@ const viewEmployee = () => {
                 allView();
             } else if (answer.viewChoice === 'VIEW EMPLOYEES BY DEPARTMENT') {
                 departmentView();
-            } else if (answer.viewChoice === 'VIEW EMPLOYEES BY MANAGER') {
-                managerView();
+            // } else if (answer.viewChoice === 'VIEW EMPLOYEES BY MANAGER') {
+            //     managerView();
             } else if (answer.viewChoice === 'VIEW EMPLOYEES BY ROLE') {
                 roleView();
             } else {
@@ -336,28 +336,28 @@ const departmentSum = () => {
 
 
 //View the records of employees with the same manager 
-const managerView = () => {
-    inquirer
-        .prompt([
-            {
-                name: "mname",
-                message: "ID of manager's employees you wish to view?",
-                type: "input"
-            },
-        ])
-        .then((answer) => {
-            connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id) where manager_id = ?",
-                [answer.mname],
-                (err, data) => {
-                    if (err) throw err;
-                    console.log('Here are the employees who report to this manager!');
-                    console.table(data)
-                    // re-prompt the user for if they want to continue
-                    start();
-                }
-            );
-        });
-};
+// const managerView = () => {
+//     inquirer
+//         .prompt([
+//             {
+//                 name: "mname",
+//                 message: "ID of manager's employees you wish to view?",
+//                 type: "input"
+//             },
+//         ])
+//         .then((answer) => {
+//             connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id) where manager_id = ?",
+//                 [answer.mname],
+//                 (err, data) => {
+//                     if (err) throw err;
+//                     console.log('Here are the employees who report to this manager!');
+//                     console.table(data)
+//                     // re-prompt the user for if they want to continue
+//                     start();
+//                 }
+//             );
+//         });
+// };
 
 
 //View the records of employees with the same role
@@ -516,6 +516,7 @@ function init() {
     inquirer.prompt(questions)
         .then(function (response) {
             console.log(response)
+
 
             console.log(READMEContent);
 
