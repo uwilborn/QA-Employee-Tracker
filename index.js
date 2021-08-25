@@ -102,7 +102,7 @@ const addEmployee = () => {
         .then((answer) => {
             // when finished prompting, insert a new item into the db with that info
             connection.query("insert into department(name) values(?);",
-               aanswer.departmentName,                 
+               answer.departmentName,                 
                 (err) => {
                     if (err) throw err;
                     console.log('Your department was added successfully!');
@@ -183,19 +183,11 @@ const employeesetup = () => {
         ])
         .then((answer) => {
             // when finished prompting, insert a new item into the db with that info
-            connection.query("INSERT INTO employee set ?",
-                {
-                    id: answer.identification,
-                    first_name: answer.firstname,
-                    last_name: answer.lastname,
-                    role_id: answer.erole,
-                    manager_id: answer.manager,
-
-                },
-
+            connection.query("insert into employee (first_name,last_name,role_id,manager_id) values (?,?,?,?);",
+            [answer.firstname,answer.lastname,answer.erole,answer.manager],
                 (err) => {
                     if (err) throw err;
-                    console.log('Your employee item was created successfully!');
+                    console.log('Your employee was created successfully!');
                     // re-prompt the user for if they want to continue
                     start();
                 }
@@ -281,7 +273,7 @@ const allView = () => {
     );
 }
 const departmentView = () => {
-    // prompt for info about the employee being viewed
+    
     inquirer
         .prompt([
             {
@@ -299,7 +291,7 @@ const departmentView = () => {
                     console.log('Here are the employees in this department!');
                     console.table(data)
                     // re-prompt the user for if they want to continue
-                  start()
+                    departmentSum()
                 }
             );
         });
@@ -321,19 +313,15 @@ const departmentSum = () => {
 
             if (answer.dsum === 'Y') {
                 connection.query("SELECT SUM(salary) FROM role",
-                    
+                    [answer.dname],
                     (err, data) => {
                         if (err) throw err;
                         console.log(data);
 
                         // re-prompt the user for if they want to continue
-                        start();
-                    }
-                );
-            } else {
-                connection.end();
-                start();
-            }
+                        start()
+                }
+        )};
         });
 };
 
