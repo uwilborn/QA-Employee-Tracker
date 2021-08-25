@@ -77,48 +77,41 @@ const addEmployee = () => {
     .then((answer) => {
         // based on their answer, call one of the functions
         if (answer.viewChoice === 'ADD DEPARTMENT') {
-            idView();
+            departmentesetup();
         } else if (answer.viewChoice === 'ADD ROLE') {
-            allView();
+            rolesetup();
         } else if (answer.viewChoice === 'ADD EMPLOYEE INFORMATION') {
-            departmentView();
+            employeesetup();
        } else {
            start()
 
         }
     });
-    // prompt for info about the employee being added
-    // inquirer
-    //     .prompt([
-    //         {
-    //             name: "identification",
-    //             message: "Employees ID?",
-    //             type: "input"
-    //         },
-    //         {
-    //             name: "departmentName",
-    //             message: "Department Name?",
-    //             type: "input"
-    //         },
 
-    //     ])
-    //     .then((answer) => {
-    //         // when finished prompting, insert a new item into the db with that info
-    //         connection.query("INSERT INTO department set ?",
-    //             {
-    //                 id: answer.identification,
-    //                 name: answer.departmentName,
-    //             },
+    const departmentesetup = ()=>{
+    //prompt for info about the department being added
+    inquirer
+        .prompt([
+            {
+                name: "departmentName",
+                message: "Department Name?",
+                type: "input"
+            },
 
-
-    //             (err) => {
-    //                 if (err) throw err;
-    //                 console.log('Your employee item was created successfully!');
-    //                 // re-prompt the user for if they want to continue
-    //                 rolesetup();
-    //             }
-    //         );
-    //     });
+        ])
+        .then((answer) => {
+            // when finished prompting, insert a new item into the db with that info
+            connection.query("insert into department(name) values(?);",
+               aanswer.departmentName,                 
+                (err) => {
+                    if (err) throw err;
+                    console.log('Your department was added successfully!');
+                    // re-prompt the user for if they want to continue
+                    start();
+                }
+            );
+        });
+    }
 };
 
 //function to add employee to the ROLE table
@@ -128,37 +121,32 @@ const rolesetup = () => {
     inquirer
         .prompt([
             {
-                name: "identification",
-                message: "Employees ID?",
-                type: "input"
-            },
-            {
                 name: "title",
-                message: "Employee's Title?",
-                type: "list",
-                choices: ["QA Tech", "QA Analyst", "QA Engineer", "QA Manager", "QA Director"]
+                message: "Role Title?",
+                type: "input",
             },
             {
                 name: "annualSalary",
-                message: "Employee's Salary?",
+                message: "Role Salary?",
                 type: "input"
+            },
+            {
+                name: "departmentid",
+                message: "Department ID?",
+                type: "list",
+                choices: [1,2,3,4],
             },
 
         ])
         .then((answer) => {
             // when finished prompting, insert a new item into the db with that info
-            connection.query("INSERT INTO role set ?",
-                {
-                    id: answer.identification,
-                    title: answer.title,
-                    salary: answer.annualSalary,
-
-                },
+            connection.query("insert into role(title,salary,department_id)values(?,?,?);",
+                [answer.title,answer.annualSalary,answer.departmentid],
                 (err) => {
                     if (err) throw err;
-                    console.log('Your employee item was created successfully!');
+                    console.log('Your role was created successfully!');
                     // re-prompt the user for if they want to continue
-                    employeesetup();
+                    start();
                 }
             );
         });
@@ -170,11 +158,6 @@ const employeesetup = () => {
     // prompt for info about the employee being added
     inquirer
         .prompt([
-            {
-                name: "identification",
-                message: "Employees ID?",
-                type: "input"
-            },
             {
                 name: "firstname",
                 message: "Employee's First Name?",
@@ -189,13 +172,13 @@ const employeesetup = () => {
                 name: "erole",
                 message: "Employee's Role ID?",
                 type: "list",
-                choices: ["1", "2", "3", "4", "5"]
+                choices: [1,2,3,4,5,6,7,8],
             },
             {
                 name: "manager",
                 message: "Employee's Manager?",
                 type: "list",
-                choices: ["4", "5", ""]
+                choices: [1,2,3,4],
             },
         ])
         .then((answer) => {
