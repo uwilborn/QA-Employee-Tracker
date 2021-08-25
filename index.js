@@ -15,7 +15,7 @@ const connection = mysql.createConnection({
 
     // Be sure to update with your own MySQL password!
     password: '',
-    database: 'qaemployees_db',
+    database: 'employees_db',
 });
 
 // const afterConnection = () => {
@@ -67,38 +67,58 @@ const start = () => {
 // function to handle ADDING new employees to the database
 //function to add employee to the DEPARTMENT table
 const addEmployee = () => {
-    // prompt for info about the employee being added
     inquirer
-        .prompt([
-            {
-                name: "identification",
-                message: "Employees ID?",
-                type: "input"
-            },
-            {
-                name: "departmentName",
-                message: "Department Name?",
-                type: "input"
-            },
+    .prompt({
+        name: 'viewChoice',
+        type: 'list',
+        message: 'Please add required information?',
+        choices: ['ADD DEPARTMENT', 'ADD ROLE', 'ADD EMPLOYEE INFORMATION'],
+    })
+    .then((answer) => {
+        // based on their answer, call one of the functions
+        if (answer.viewChoice === 'ADD DEPARTMENT') {
+            idView();
+        } else if (answer.viewChoice === 'ADD ROLE') {
+            allView();
+        } else if (answer.viewChoice === 'ADD EMPLOYEE INFORMATION') {
+            departmentView();
+       } else {
+           start()
 
-        ])
-        .then((answer) => {
-            // when finished prompting, insert a new item into the db with that info
-            connection.query("INSERT INTO department set ?",
-                {
-                    id: answer.identification,
-                    name: answer.departmentName,
-                },
+        }
+    });
+    // prompt for info about the employee being added
+    // inquirer
+    //     .prompt([
+    //         {
+    //             name: "identification",
+    //             message: "Employees ID?",
+    //             type: "input"
+    //         },
+    //         {
+    //             name: "departmentName",
+    //             message: "Department Name?",
+    //             type: "input"
+    //         },
+
+    //     ])
+    //     .then((answer) => {
+    //         // when finished prompting, insert a new item into the db with that info
+    //         connection.query("INSERT INTO department set ?",
+    //             {
+    //                 id: answer.identification,
+    //                 name: answer.departmentName,
+    //             },
 
 
-                (err) => {
-                    if (err) throw err;
-                    console.log('Your employee item was created successfully!');
-                    // re-prompt the user for if they want to continue
-                    rolesetup();
-                }
-            );
-        });
+    //             (err) => {
+    //                 if (err) throw err;
+    //                 console.log('Your employee item was created successfully!');
+    //                 // re-prompt the user for if they want to continue
+    //                 rolesetup();
+    //             }
+    //         );
+    //     });
 };
 
 //function to add employee to the ROLE table
@@ -225,7 +245,7 @@ const viewEmployee = () => {
             } else if (answer.viewChoice === 'VIEW EMPLOYEES BY ROLE') {
                 roleView();
             } else {
-                connection.end();
+               start()
 
             }
         });
@@ -250,7 +270,7 @@ const idView = () => {
         ])
         .then((answer) => {
             // when finished prompting, filter db with that info
-            connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id)  where first_name= ? and last_name = ?",
+            connection.query("SELECT * FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON department.id = role.department_id  where first_name= ? and last_name = ?;",
                 [answer.firstname, answer.lastname],
                 (err, data) => {
                     if (err) throw err;
@@ -266,7 +286,7 @@ const idView = () => {
 //View all the employees records
 
 const allView = () => {
-    connection.query("SELECT * FROM ((employee INNER JOIN department ON employee.id = department.id) INNER JOIN role ON employee.id = role.id)",
+    connection.query("SELECT * FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON department.id = role.department_id;",
 
         (err, data) => {
             if (err) throw err;
@@ -289,14 +309,14 @@ const departmentView = () => {
         ])
         .then((answer) => {
             // when finished prompting, filter db with that info
-            connection.query("SELECT * FROM ((department INNER JOIN employee ON department.id = employee.id) INNER JOIN role ON department.id = role.id) where name = ?",
+            connection.query("SELECT * FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON department.id = role.department_id where name= ?;",
                 [answer.dname],
                 (err, data) => {
                     if (err) throw err;
                     console.log('Here are the employees in this department!');
                     console.table(data)
                     // re-prompt the user for if they want to continue
-                    departmentSum();
+                  start()
                 }
             );
         });
